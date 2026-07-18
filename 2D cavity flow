@@ -1,0 +1,98 @@
+%initial values
+nx= 60 ; ny= 60 ; 
+nit= 100 ; nt=1000;
+x= linspace(0,2,nx) ; y=linspace(0,2,ny) ;
+
+dx= 2/(nx-1) ; dy=2/(ny-1) ;
+dt= 0.001;
+
+vis= 0.1; 
+rho=  1; 
+
+u=zeros(nx,ny) ; v=zeros(nx,ny) ; p= zeros(nx,ny); b= zeros(nx,ny);
+
+
+% time loop for pressure
+
+for n= 1:nt
+vn=v;
+un=u;
+
+    for i=2:nx-1
+        for j =2:ny-1
+            b(i,j)= rho*( 1/dt*( ( un(i+1,j)-un(i-1,j))/(2*dx) + (vn(i,j+1)-vn(i,j-1))/(2*dy) ) ...
+                - ( (un(i+1,j)-un(i-1,j))/(2*dx) ).^2 ...
+                -2 *( (un(i,j+1)-un(i,j-1))/(2*dy) ) .*( (vn(i+1,j)-vn(i-1,j)) /(2*dx))...
+                - ( (vn(i,j+1)-vn(i,j-1))/(2*dy) ).^2);
+
+        end
+    end
+
+  
+
+
+%pressure solver
+for ni=1:nit
+    pn=p;
+    for i=2:nx-1
+        for j=2:ny-1
+        ;
+    p(:,1)=p(:,2);
+end
+
+%for u and v component
+    for i=2:nx-1
+        for j =2:ny-1
+            u(i,j)=un(i,j)-((dt/rho)*( (p(i+1,j)-p(i-1,j))/(2*dx) ))+...
+                ( vis*dt/(dx^2) )*( (un(i+1,j)+ un(i-1,j)-2*un(i,j)) )...
+                + ( vis*dt/(dy^2) )*( (un(i,j+1)+ un(i,j-1)-2*un(i,j)) )...
+                -( un(i,j)*(dt/dx)*(un(i,j)-un(i-1,j) ) )...
+                -( vn(i,j)*(dt/dy)*(un(i,j)-un(i,j-1) ) );
+
+            v(i,j)=vn(i,j)-((dt/rho)*( (p(i,j+1)-p(i,j-1))/(2*dy) ))+...
+                ( vis*dt/(dx^2) )*( (vn(i+1,j)+ vn(i-1,j)-2*vn(i,j)) )...
+                + ( vis*dt/(dy^2) )*( (vn(i,j+1)+ vn(i,j-1)-2*vn(i,j)) )...
+                -( un(i,j)*(dt/dx)*(vn(i,j)-vn(i-1,j) ) )...
+                -( vn(i,j)*(dt/dy)*(vn(i,j)-vn(i,j-1) ) );
+        end    p(i,j)=( (dy^2*(pn(i+1,j)+pn(i-1,j))) +(dx^2*(pn(i,j+1)+pn(i,j-1)))-(b(i,j)*dx^2*dy^2) )/( 2*(dy^2+dx^2) );
+        end
+    end
+    p(nx,:)=p(nx-1,:);
+    p(1,:)=p(2,:);
+    p(:,ny)=0
+    end
+    u(1,:)  = 0;
+    u(nx,:) = 0;
+    u(:,1)  = 0;
+    u(:,ny) = 1;
+
+    v(1,:)  = 0;
+    v(nx,:) = 0;
+    v(:,1)  = 0;
+    v(:,ny) = 0;
+end
+
+[X,Y] = meshgrid(x,y);
+
+figure
+contourf(X,Y,p',20,'LineColor','none')
+hold on
+
+streamslice(X,Y,u',v')
+
+colorbar
+axis equal
+title('Pressure and Streamlines')
+
+
+
+
+
+
+
+
+
+
+
+
+
