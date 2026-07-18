@@ -1,0 +1,63 @@
+nt= 100; 
+nx= 80 ; ny= 80  ;
+dt= 0.001; 
+vis= 0.01 ; 
+x=linspace(0,2,nx) ; y=linspace(0,2,ny); 
+dx= 2/(nx-1); dy=2/(nx-1) ; 
+
+u=zeros(nx,ny);
+v=zeros(nx,ny);
+
+for i=1:nx
+    for j=1:ny
+        
+            if x(i)>=0.5 && x(i)<=1 && y(j)>=0.5 && y(j)<=1
+                u(i,j)=2;
+                v(i,j)=2;
+            else
+                u(i,j)=1;
+                v(i,j)=1;
+            end
+        end
+end
+
+%time loops
+t=0;
+for n=1:nt
+    un=u;
+    vn=v;
+    for i=2:nx-1
+
+        for j=2:ny-1
+
+u(i,j)=un(i,j)-(dt/dx)*un(i,j)*( un(i,j)-un(i-1,j) )-(dt/dy)...
+    *vn(i,j)* ( un(i,j)-un(i,j-1) )+ vis*(dt/dx^2)...
+    *( un(i+1,j)+un(i-1,j)-2*un(i,j) )+...
+    vis*(dt/dy^2)*( un(i,j+1)+un(i,j-1)-2*un(i,j) );
+       
+    v(i,j)=vn(i,j)-(dt/dx)*un(i,j)*( vn(i,j)-vn(i-1,j) )-(dt/dy)...
+        *vn(i,j)* ( vn(i,j)-vn(i,j-1) )+ vis*(dt/dx^2)...
+        *( vn(i+1,j)+vn(i-1,j)-2*vn(i,j) )+...
+        vis*(dt/dy^2)*( vn(i,j+1)+vn(i,j-1)-2*vn(i,j) );
+        end
+    end
+
+
+t = t + dt;
+u(1,:)=1;
+u(nx,:)=1;
+u(:,1)=1;
+u(:,ny)=1;
+
+v(1,:)=1; 
+v(nx,:)=1;
+v(:,1)=1;
+v(:,ny)=1;
+end
+mesh(x,y,u')
+
+
+
+
+
+            
