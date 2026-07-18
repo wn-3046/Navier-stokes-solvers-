@@ -36,7 +36,12 @@ for ni=1:nit
     pn=p;
     for i=2:nx-1
         for j=2:ny-1
-        ;
+                p(i,j) = ( (dy^2*(pn(i+1,j)+pn(i-1,j))) + (dx^2*(pn(i,j+1)+pn(i,j-1))) - (b(i,j)*dx^2*dy^2) ) / (2*(dy^2+dx^2));
+        end
+    end
+    p(nx,:) = p(nx-1,:);
+    p(1,:)  = p(2,:);
+    p(:,ny) = 0;
     p(:,1)=p(:,2);
 end
 
@@ -54,13 +59,9 @@ end
                 + ( vis*dt/(dy^2) )*( (vn(i,j+1)+ vn(i,j-1)-2*vn(i,j)) )...
                 -( un(i,j)*(dt/dx)*(vn(i,j)-vn(i-1,j) ) )...
                 -( vn(i,j)*(dt/dy)*(vn(i,j)-vn(i,j-1) ) );
-        end    p(i,j)=( (dy^2*(pn(i+1,j)+pn(i-1,j))) +(dx^2*(pn(i,j+1)+pn(i,j-1)))-(b(i,j)*dx^2*dy^2) )/( 2*(dy^2+dx^2) );
-        end
+        end    
     end
-    p(nx,:)=p(nx-1,:);
-    p(1,:)=p(2,:);
-    p(:,ny)=0
-    end
+
     u(1,:)  = 0;
     u(nx,:) = 0;
     u(:,1)  = 0;
@@ -70,7 +71,10 @@ end
     v(nx,:) = 0;
     v(:,1)  = 0;
     v(:,ny) = 0;
-end
+    
+    end
+    
+
 
 [X,Y] = meshgrid(x,y);
 
